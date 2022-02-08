@@ -1,0 +1,50 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" rel="stylesheet" href="{% static 'game/css/normalize.css' %}?{{rand}}">
+    <link type="text/css" rel="stylesheet" href="{% static 'game/css/base.css' %}?{{rand}}">
+    <link type="text/css" rel="stylesheet" href="{% static mainstyle %}?{{rand}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;700&family=Montserrat:wght@100;300;600&family=Open+Sans:wght@300;500&display=swap" rel="stylesheet">
+
+    <title>TicTacToe</title>
+</head>
+<body>
+<header class="header">
+    <div class="container header__container ">
+        <ul class="header__list">
+            {% for i in menu %}
+            <li class="header__list-elem">
+                <a href="{% url i.url_name %}">{{ i.title }}</a>
+            </li>
+            {% endfor %}
+
+            {% if request.user.is_authenticated %}
+            <li class="header__list-elem">
+                {{ user.username }},
+                <a href="{% url 'logout' %}">Выйти</a>?
+            </li>
+            {% else %}
+
+            <li class="header__list-elem">
+                <a href="{% url 'enter' %}">Регистрация</a>
+            </li>
+            <li class="header__list-elem">
+                <a href="{% url 'login' %}">Вход</a>
+            </li>
+
+            {% endif %}
+        </ul>
+    </div>
+</header>
+
+
+{% block content%}
+{% endblock %}
+
+</body>
+</html>
