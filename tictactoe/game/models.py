@@ -32,3 +32,9 @@ class Games(models.Model):
         verbose_name = 'Игра'
         verbose_name_plural = 'Игры'
 
+class WaitingGame(models.Model):
+    waiting_player = models.ForeignKey(User, on_delete=models.PROTECT, related_name='waiting_player')
+    class Meta:
+        verbose_name = 'Игра в ожидании'
+        verbose_name_plural = 'Игры в ожидании'
+

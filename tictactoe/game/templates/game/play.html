@@ -3,5 +3,94 @@
 {% block content %}
 <main>
     <h1>{{ title }}</h1>
+
+    <input type="submit" id="creation_btn" value="Создать игру">
+
+    <ul class="waiting_games" id="waiting_games">
+        {% for game in object_list %}
+            <li id="game_{{ game.id }}">
+                Игрок с id = {{ game.waiting_player_id }} хочет сыграть
+                {% if id == game.waiting_player_id %}
+                <button id="deletegame_btn" onclick="deleteGame()">Отменить</button>
+                {% else %}
+                <button id="join_game_{{ game.id }}" onclick="joinGame(this)">Сыграть</button>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    
+
 </main>
+
+<script type="text/javascript">
+
+    let url = `ws://${window.location.host}/ws/`
+    const chatSocket = new WebSocket(url)
+    let waitingGames = document.getElementById('waiting_games')
+    let creationBtn = document.getElementById('creation_btn')
+
+
+    function deleteGame() {
+        chatSocket.send(JSON.stringify({
+            'type': 'removal',
+            'id': '{{ id }}'
+        }))
+    }
+
+    function joinGame(element){
+        console.log('qwer')
+        chatSocket.send(JSON.stringify({
+            'type': 'join',
+            'player_id': '{{ id }}',
+            'game_id': element.id.substr(10)
+        }))
+    }
+
+
+    creationBtn.addEventListener('click', function() {
+        chatSocket.send(JSON.stringify({
+            'type': 'creation',
+            'id': '{{ id }}'
+        }))
+    })
+
+
+    chatSocket.onmessage = function(e) {
+        let data = JSON.parse(e.data)
+        if (data.type === 'creation') {
+            if('{{ id }}' == data.player_id){
+            //     waitingGames.insertAdjacentHTML('afterbegin', `<li id="game_${data.game_id}">
+            //     Игрок с id = ${data.player_id} хочет сыграть
+            //     <a href="/${data.game_id}/">Присоединиться</a>
+            //     <input type="submit" id="delete_game" value="Удалить игру">
+            // </li>`)
+            waitingGames.insertAdjacentHTML('afterbegin', `<li id="game_${data.game_id}">
+                Игрок с id = ${data.player_id} хочет сыграть
+                <button id="deletegame_btn" onclick="deleteGame()">Отменить</button>
+
+            </li>`)
+
+            }
+            else {
+                console.log(data.game_id)
+                waitingGames.insertAdjacentHTML('afterbegin', `<li id="game_${data.game_id}">
+                Игрок с id = ${data.player_id} хочет сыграть
+                <button id="join_game_${data.game_id}" onclick="joinGame(this)">Сыграть</button>
+            </li>`)
+            }
+        }
+        else if (data.type === 'removal') {
+            document.getElementById(`game_${data.game_id}`).remove()
+        }
+        else if (data.type === 'join') {
+            document.getElementById(`game_${data.game_id}`).remove()
+            if (data.id_1 === '{{ id }}' || data.id_2 === '{{ id }}') {
+                setTimeout(function() {
+                    window.location.pathname = `/game/${data.game_id}/`
+                }, 150)
+            }
+        }
+    }
+
+</script>
 {% endblock %}
