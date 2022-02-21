@@ -9,7 +9,8 @@
     <ul class="waiting_games" id="waiting_games">
         {% for game in object_list %}
             <li id="game_{{ game.id }}">
-                Игрок с id = {{ game.waiting_player_id }} хочет сыграть
+                <!-- Игрок с id = {{ game.waiting_player_id }} хочет сыграть -->
+                Игрок {{ game.username }} хочет сыграть
                 {% if id == game.waiting_player_id %}
                 <button id="deletegame_btn" onclick="deleteGame()">Отменить</button>
                 {% else %}
@@ -31,14 +32,16 @@
 
 
     function deleteGame() {
-        chatSocket.send(JSON.stringify({
+        if (document.querySelector('#deletegame_btn')){
+            chatSocket.send(JSON.stringify({
             'type': 'removal',
             'id': '{{ id }}'
         }))
+        }
     }
 
     function joinGame(element){
-        console.log('qwer')
+        deleteGame()
         chatSocket.send(JSON.stringify({
             'type': 'join',
             'player_id': '{{ id }}',
@@ -50,7 +53,8 @@
     creationBtn.addEventListener('click', function() {
         chatSocket.send(JSON.stringify({
             'type': 'creation',
-            'id': '{{ id }}'
+            'id': '{{ id }}',
+            'username': '{{ username }}'
         }))
     })
 
@@ -65,7 +69,7 @@
             //     <input type="submit" id="delete_game" value="Удалить игру">
             // </li>`)
             waitingGames.insertAdjacentHTML('afterbegin', `<li id="game_${data.game_id}">
-                Игрок с id = ${data.player_id} хочет сыграть
+                Игрок {{ username }} хочет сыграть
                 <button id="deletegame_btn" onclick="deleteGame()">Отменить</button>
 
             </li>`)
@@ -74,7 +78,7 @@
             else {
                 console.log(data.game_id)
                 waitingGames.insertAdjacentHTML('afterbegin', `<li id="game_${data.game_id}">
-                Игрок с id = ${data.player_id} хочет сыграть
+                Игрок ${data.username} хочет сыграть
                 <button id="join_game_${data.game_id}" onclick="joinGame(this)">Сыграть</button>
             </li>`)
             }

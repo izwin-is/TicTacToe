@@ -8,5 +8,6 @@ urlpatterns = [
     path('profile/', profile, name='profile'),
     path('liders/', liders, name='liders'),
     path('login/', LoginUser.as_view(), name='login'),
-    path('logout/', logout_user, name='logout')
+    path('logout/', logout_user, name='logout'),
+    path('game/<int:game_id>/', GameView.as_view(), name='game')
 ]

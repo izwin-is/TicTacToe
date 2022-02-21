@@ -1,0 +1,83 @@
+.field {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+.field_row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+    /* max-height: 154px; */
+    
+}
+
+
+.field_btn {
+    height: 150px;
+    width: 150px;
+    border: none;
+    overflow: hidden;
+    margin: 0 4px 0 0;
+    padding: 0;
+    background-color: rgb(200, 200, 200);
+    /* transition: all 1s ease 0s; */
+    /* outline: 6px solid black; */
+}
+
+/* NIL */
+
+.big-circule {
+    position: relative;
+    height: 120px;
+    width: 120px;
+    left: 15px;
+    background-color:chartreuse;
+    border-radius: 50%;
+    transition: all 0.45s cubic-bezier(0.62, 2, 0.71, 0.5)
+}
+
+.small-circule {
+    position: relative;
+    height: 120px;
+    width: 120px;
+    left: 0;
+    top: 0;
+    background-color: rgb(200, 200, 200);
+    border-radius: 50%;
+    transition: all 0.45s cubic-bezier(0.62, 2, 0.71, 0.5)
+}
+
+
+/* CROSS */
+
+.cross {
+    position: relative;
+    overflow: hidden;
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    /* background-color: var(--button-color); */
+    border: none;
+}
+
+
+.stick1 {
+    width: 172.13px;
+    height: 40px;
+    background-color: red;
+    transform: translateX(-11px) translateY(20px) rotate(45deg) translateX(-192px);
+    /* border-radius: 50%; */
+    /* position: absolute; */
+    transition: all 0.45s cubic-bezier(0.6, 2, 0.6, 0.61);
+}
+
+.stick2 {
+    width: 172.13px;
+    height: 40px;
+    background-color: red;
+    transform: translateX(-11px) translateY(-20px) rotate(-45deg) translateX(192px);
+    transition: all 0.45s cubic-bezier(0.6, 2, 0.6, 0.61) 0.15s;
+}

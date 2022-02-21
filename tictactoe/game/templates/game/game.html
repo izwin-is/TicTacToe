@@ -1,0 +1,146 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+<main>
+    <h1>{{ title }}</h1>
+    <div id="winner"></div>
+    <div class="field" id="field"></div>
+
+    <!-- {{id}}
+    {{username}}
+    {{ first_id }} -->
+    {%if id == first_id%}
+    я первый
+    {%endif%}
+
+</main>
+
+<script type="text/javascript">
+
+    let url = `ws://${window.location.host}/ws/game/{{ game_id }}/`
+    const chatSocket = new WebSocket(url)
+    let field = document.getElementById('field')
+
+
+    // function drawCross(elem) {
+    //     elem.style.backgroundColor = 'red'
+    // }
+    function drawCross(elem) {
+        elem.classList.add('cross')
+        let stick1 = document.createElement('div')
+        let stick2 = document.createElement('div')
+        elem.append(stick1)
+        elem.append(stick2)
+        stick1.setAttribute('class', 'stick1')
+        stick2.setAttribute('class', 'stick2')
+        
+        setTimeout(function() {
+            stick1.style.transform = 'translateX(-11px) translateY(20px) rotate(45deg)'
+            stick2.style.transform = 'translateX(-11px) translateY(-20px) rotate(-45deg)'
+        }, 10)
+    }
+
+    // function drawNil(elem) {
+    //     elem.style.backgroundColor = 'green'
+    // }
+    function drawNil(elem) {
+    elem.classList.add('nil')
+    let bigCircule = document.createElement('div')
+    let smallCircule = document.createElement('div')
+    bigCircule.classList.add('big-circule')
+    smallCircule.classList.add('small-circule')
+    bigCircule.append(smallCircule)
+    elem.append(bigCircule)
+    
+    setTimeout(function() {
+        smallCircule.style.width = '100px'
+        smallCircule.style.height = '100px'
+        smallCircule.style.left = '25px'
+        smallCircule.style.top = '25px'
+
+        bigCircule.style.width = '150px'
+        bigCircule.style.height = '150px'
+        bigCircule.style.left = '0px'
+    }, 10)
+}
+
+    function winner(data){
+        let winner = document.getElementById('winner')
+        if (data.result == 2){
+            winner.textContent = 'Ничья'
+        }
+        else if (data.id == '{{ id }}'){
+            winner.textContent = 'Вы победили'
+        }
+        else {
+            winner.textContent = 'Вы проиграли'
+        }
+        youTurn = false
+    }
+
+    let youTurn = false
+    let draw = drawNil
+    let drawEnemy = drawCross
+    if ('{{ id }}' === '{{ first_id }}'){
+        youTurn = true
+        draw = drawCross
+        drawEnemy = drawNil
+    }
+
+    function createField(field1) {
+        for (let i = 0; i < 3; i++){
+            let row = document.createElement('div')
+            row.classList.add('field_row')
+            for (let j = 0; j < 3; j++) {
+                let elem = document.createElement('button')
+                elem.classList.add('field_btn')
+                elem.setAttribute('id', `${i}${j}`)
+                if (`${field1[i][j]}` == '{{ id }}') {
+                    draw(elem)
+                }
+                else if(field1[i][j] != 0){
+                    drawEnemy(elem)
+                }
+                row.append(elem)
+            }
+            field.append(row)
+        }
+    }
+    
+
+    field.addEventListener('click', function(event) {
+        if (youTurn && event.target.id != 'field'){
+            draw(event.target)
+            chatSocket.send(JSON.stringify({
+            'type': 'move',
+            'id': '{{ id }}',
+            'username': '{{ username }}',
+            'position': event.target.id
+            }))
+            youTurn = false
+        }
+    })
+
+    chatSocket.onmessage = function(e) {
+        let data = JSON.parse(e.data)
+        if (data.type === 'move'){
+            if (data.id != '{{ id }}') {
+                drawEnemy(document.getElementById(data.position))
+                youTurn = true
+            }
+            if (Boolean(data.result)){
+                winner(data)
+                chatSocket.close()
+            }
+        }
+        if (data.type == 'connection') {
+            console.log(data)
+            createField(JSON.parse(data.field))
+        }
+    }
+
+    
+
+
+</script>
+{% endblock %}

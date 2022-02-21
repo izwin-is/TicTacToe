@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import json
 
 # class User(models.Model):
 #     nick = models.CharField(max_length=30)
@@ -26,7 +27,10 @@ class Profile(models.Model):
 class Games(models.Model):
     player_1 = models.ForeignKey(User, on_delete=models.PROTECT, related_name='player_1')
     player_2 = models.ForeignKey(User, on_delete=models.PROTECT, related_name='player_2')
-    winner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='winner')
+    winner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='winner', null=True)
+    first = models.ForeignKey(User, on_delete=models.PROTECT, related_name='first')
+    field = models.CharField(default=json.dumps([[0, 0, 0], [0, 0, 0], [0, 0, 0]]), max_length=9)
+    href_name = models.IntegerField(blank=True)
     game_time = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = 'Игра'
@@ -37,4 +41,8 @@ class WaitingGame(models.Model):
     class Meta:
         verbose_name = 'Игра в ожидании'
         verbose_name_plural = 'Игры в ожидании'
+
+    @property
+    def username(self):
+        return User.objects.get(pk=self.waiting_player.pk).username
 
